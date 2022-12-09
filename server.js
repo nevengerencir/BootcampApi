@@ -7,6 +7,8 @@ const errorHandler = require('./middelware/error.js')
 dotenv.config({ path: "./config/config.env" });
 
 const bootcamps = require('./routes/bootcamps');
+const courses = require('./routes/courses');
+
 
 
 // Connect to database
@@ -21,6 +23,8 @@ if ((process.env.NODE_ENV = "development")) {
   app.use(morgan("dev"));
 }
 app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/v1/courses", courses);
+
 app.use(errorHandler)
 
 
