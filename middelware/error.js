@@ -2,6 +2,8 @@
 const ErrorResponse = require('../utils/errorResponse')
 const errorHandler = (err,req,res,next) =>{
 
+let error ={...err}
+error.message = err.message
   
 // Log to console for dev
 //mongoose bad Object id 
@@ -22,7 +24,7 @@ if(err.name === 'ValidationError'){
 }
 res.status(error.statusCode || 500).json({
     success: false,
-    error:error.message || "Server Error"
+    error: err.message || 'Error server'
 })
 }
 module.exports = errorHandler
