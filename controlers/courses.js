@@ -5,22 +5,33 @@ const Bootcamp = require('../models/Bootcamp');
 const ErrorResponse = require('../utils/errorResponse')
 
 exports.getCourses  = asyncHandler(async (req, res, next) => {
-    let query
-if (req.params.bootcampId){
-    query = Course.find({bootcamp: req.params.bootcampId})
-}else{
-    query = Course.find().populate({
-        path: 'bootcamp',
-        select: 'name description'
-})
-}
+//     let query
+// if (req.params.bootcampId){
+//     query = Course.find({bootcamp: req.params.bootcampId})
+// }else{
+//     query = Course.find().populate({
+//         path: 'bootcamp',
+//         select: 'name description'
+// })
+// }
 
-    const courses = await query
-    res.status(200).json({
-      sucess:true,
-      count: courses.length,
-      data: courses
-    })  
+//     const courses = await query
+    // res.status(200).json({
+    //   sucess:true,
+    //   count: courses.length,
+    //   data: courses
+    // })  
+    if(req.params.bootcampId){
+        const courses = await Course.find({bootcamp: BootcampId})
+    return res.status(200).json({
+        sucess: true,
+        count : courses.length,
+        data: courses
+    })
+    
+    }else{
+        res.status(200).json(res.advancedResults)
+    }
 })
 
 exports.getCourse  = asyncHandler(async (req, res, next) => {

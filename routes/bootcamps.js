@@ -9,7 +9,9 @@ const {
   getBootcampsInRadius,
   bootcampPhotoUpload
 } = require('../controlers/bootcamps');
-const upload = require('../config/cloudinary')
+const Bootcamp = require('../models/Bootcamp')
+const advancedResults = require('../middelware/advancedResult')
+// const upload = require('../config/cloudinary') - multer
 
 
 //Include other resource routers 
@@ -20,13 +22,15 @@ const router = express.Router();
 router.use('/:bootcampId/courses',courseRouter)
 router.route('/:id/photo').put(bootcampPhotoUpload)
 router.route("/radius/:zipcode/:distance").get(getBootcampsInRadius)
-router.route("/").get(getBootcamps).post(createBootcamp);
+router.route("/").get(advancedResults(Bootcamp,'courses'),getBootcamps).post(createBootcamp);
 
 router
   .route("/:id")
-  .post(upload.single('image'),(req,res) =>{
-    return res.json({ picture: req.file.path })
-  })
+  // .post(upload.single('image'),(req,res) =>{
+  //   return res.status(200).json({
+  //     sucess:true,
+  //     data: req.file.path
+  // })}) if using multer - disable file uploader first
   .get(getBootcamp)
   .put(updateBootcamp)
   .delete(deleteBootcamp);
