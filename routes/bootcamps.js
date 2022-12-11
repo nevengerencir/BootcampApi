@@ -1,4 +1,5 @@
 const express = require('express');
+
 const {
   getBootcamps,
   getBootcamp,
@@ -8,6 +9,7 @@ const {
   getBootcampsInRadius,
   bootcampPhotoUpload
 } = require('../controlers/bootcamps');
+const upload = require('../config/cloudinary')
 
 
 //Include other resource routers 
@@ -22,6 +24,9 @@ router.route("/").get(getBootcamps).post(createBootcamp);
 
 router
   .route("/:id")
+  .post(upload.single('image'),(req,res) =>{
+    return res.json({ picture: req.file.path })
+  })
   .get(getBootcamp)
   .put(updateBootcamp)
   .delete(deleteBootcamp);

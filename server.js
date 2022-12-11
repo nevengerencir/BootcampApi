@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const errorHandler = require('./middelware/error.js')
 dotenv.config({ path: "./config/config.env" });
 
+
 const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
 
