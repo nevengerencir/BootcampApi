@@ -85,7 +85,15 @@ exports.getBootcamps =asyncHandler(async (req, res,next) => {
 // @desc Create single bootcamp
 // @route  POST /api/v1/bootcamps/
 // @access private
-exports.createBootcamp = asyncHandler(async (req, res, next) =>{const bootcamp= await Bootcamp.create(req.body)
+exports.createBootcamp = asyncHandler(async (req, res, next) =>{
+  req.body.user = req.user.id
+
+  const publishedBootcamp = await Bootcamp.findOne({user: req.user.id})
+
+  if(publishedBootcamp && req.user.role !== "admin"){
+    return next(new ErrorResponse(`The user with ${req.user.id} has allready published a bootcamp`))
+  }
+  const bootcamp= await Bootcamp.create(req.body)
   res.status(201).json(
     {
       sucess:true,
@@ -98,10 +106,15 @@ exports.createBootcamp = asyncHandler(async (req, res, next) =>{const bootcamp= 
 // @route  PUT /api/v1/bootcamps/:id
 // @access private
 exports.updateBootcamp =asyncHandler( async (req, res,next) => {
-    const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id,req.body,{new:true, runValidators:true})
+   let bootcamp = await Bootcamp.findById(req.params.id)
     if(!bootcamp){
       return  next(new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`,404))
     }
+    if(bootcamp.user.toString() !== req.user.id && req.user.role!=='admin'){
+      return  next(new ErrorResponse(`User ${req.params.id}: not authorized`,401))
+    }
+     bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id,req.body,{new:true, runValidators:true})
+
     res.status(200).json({
       sucess:true,
       data:bootcamp
@@ -118,6 +131,9 @@ exports.deleteBootcamp = asyncHandler(async (req, res,next) => {
     const bootcamp = await Bootcamp.findById(req.params.id)
     if(!bootcamp){
       return  next(new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`,404))
+    }
+    if(bootcamp.user.toString() !== req.user.id && req.user.role!=='admin'){
+      return  next(new ErrorResponse(`User ${req.params.id}: not authorized`,401))
     }
     bootcamp.remove()
     res.status(200).json({
@@ -156,9 +172,11 @@ res.status(200).json({
 // @route  put /api/v1/bootcamps/:id/photo
 // @access private
 exports.bootcampPhotoUpload = asyncHandler(async (req, res,next) => {
-
- 
+ console.log(123)
   const bootcamp = await Bootcamp.findById(req.params.id)
+  if(bootcamp.user.toString() !== req.user.id && req.user.role!=='admin'){
+    return  next(new ErrorResponse(`User ${req.params.id}: not authorized`,401))
+  }
  
   if(!bootcamp){
     return  next(new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`,404))

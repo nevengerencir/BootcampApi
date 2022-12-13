@@ -1,7 +1,7 @@
 
 const ErrorResponse = require('../utils/errorResponse')
 const errorHandler = (err,req,res,next) =>{
-
+console.log(err.code)
 let error ={...err}
 error.message = err.message
   
@@ -24,7 +24,7 @@ if(err.name === 'ValidationError'){
 }
 res.status(error.statusCode || 500).json({
     success: false,
-    error: err.message || 'Error server'
+    error: error.message || 'Error server'
 })
 }
 module.exports = errorHandler
