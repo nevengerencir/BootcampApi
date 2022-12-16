@@ -1,5 +1,5 @@
-const express = require('express');
-const {protect,authorize} = require('../middelware/auth')
+const express = require("express");
+const { protect, authorize } = require("../middelware/auth");
 const {
   getBootcamps,
   getBootcamp,
@@ -7,22 +7,29 @@ const {
   updateBootcamp,
   deleteBootcamp,
   getBootcampsInRadius,
-  bootcampPhotoUpload
-} = require('../controlers/bootcamps');
-const Bootcamp = require('../models/Bootcamp')
-const advancedResults = require('../middelware/advancedResult')
+  bootcampPhotoUpload,
+} = require("../controlers/bootcamps");
+const Bootcamp = require("../models/Bootcamp");
+const advancedResults = require("../middelware/advancedResult");
 // const upload = require('../config/cloudinary') - multer
 
-
-//Include other resource routers 
-const courseRouter = require('./courses')
+//Include other resource routers
+const courseRouter = require("./courses");
+const reviewRouter = require("./reviews");
 
 const router = express.Router();
 //Re-route into other resource routers
-router.use('/:bootcampId/courses',courseRouter)
-router.route('/:id/photo').put(protect,authorize('publisher','admin'),bootcampPhotoUpload)
-router.route("/radius/:zipcode/:distance").get(getBootcampsInRadius)
-router.route("/").get(advancedResults(Bootcamp,'courses'),getBootcamps).post(protect,authorize('publisher','admin'),createBootcamp);
+router.use("/:bootcampId/courses", courseRouter);
+router.use("/:bootcampId/reviews", reviewRouter);
+
+router
+  .route("/:id/photo")
+  .put(protect, authorize("publisher", "admin"), bootcampPhotoUpload);
+router.route("/radius/:zipcode/:distance").get(getBootcampsInRadius);
+router
+  .route("/")
+  .get(advancedResults(Bootcamp, "courses"), getBootcamps)
+  .post(protect, authorize("publisher", "admin"), createBootcamp);
 
 router
   .route("/:id")
@@ -32,8 +39,7 @@ router
   //     data: req.file.path
   // })}) if using multer - disable file uploader first
   .get(getBootcamp)
-  .put(protect,authorize('publisher','admin'),updateBootcamp)
-  .delete(protect,authorize('publisher','admin'),deleteBootcamp);
-  
+  .put(protect, authorize("publisher", "admin"), updateBootcamp)
+  .delete(protect, authorize("publisher", "admin"), deleteBootcamp);
 
-  module.exports = router;
+module.exports = router;
