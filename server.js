@@ -8,6 +8,9 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const errorHandler = require("./middelware/error.js");
 dotenv.config({ path: "./config/config.env" });
+const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
+const xss = require("xss-clean");
 
 const bootcamps = require("./routes/bootcamps");
 const courses = require("./routes/courses");
@@ -31,6 +34,12 @@ if ((process.env.NODE_ENV = "development")) {
 
 app.use(fileupload());
 
+// Prevent nosql injections
+app.use(mongoSanitize());
+// Security header
+app.use(helmet());
+// Prevent XSS attacks
+app.use(xss());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/v1/bootcamps", bootcamps);

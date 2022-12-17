@@ -5,14 +5,25 @@ const Review = require("../models/Review");
 const advancedResult = require("../middelware/advancedResult");
 const { protect, authorize } = require("../middelware/auth");
 
-const { getReviews, getReview } = require("../controlers/reviews");
+const {
+  getReviews,
+  getReview,
+  createReview,
+  updateReview,
+  deleteReview,
+} = require("../controlers/reviews");
 
 router
   .route("/")
   .get(
     advancedResult(Review, { path: "bootcamp", select: "name description" }),
     getReviews
-  );
-router.route("/:id").get(getReview);
+  )
+  .post(protect, authorize("user", "admin"), createReview);
+router
+  .route("/:id")
+  .get(getReview)
+  .put(protect, authorize("user", "admin"), updateReview)
+  .delete(protect, authorize("user", "admin"), deleteReview);
 
 module.exports = router;

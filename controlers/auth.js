@@ -162,3 +162,17 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   await user.save();
   sendTokenResponse(user, 200, res);
 });
+
+//@desc Log user out / clear cookie
+// @route Get / api/v1/auth/logout
+// @access Private
+exports.logOut = asyncHandler(async (req, res, next) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    sucess: true,
+    data: {},
+  });
+});
